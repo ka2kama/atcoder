@@ -29,7 +29,7 @@ use std::iter;
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use proconio::marker::{Chars, Usize1};
-use proconio::{fastout, input};
+use proconio::{derive_readable, fastout, input};
 
 #[fastout]
 fn main() {
