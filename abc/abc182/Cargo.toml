@@ -1,38 +1,38 @@
 [package]
-name = "abc183"
+name = "abc182"
 version = "0.1.0"
 edition = "2018"
 
 [package.metadata.cargo-compete.bin]
-abc183-a = { alias = "a", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_a" }
-abc183-b = { alias = "b", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_b" }
-abc183-c = { alias = "c", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_c" }
-abc183-d = { alias = "d", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_d" }
-abc183-e = { alias = "e", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_e" }
-abc183-f = { alias = "f", problem = "https://atcoder.jp/contests/abc183/tasks/abc183_f" }
+abc182-a = { alias = "a", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_a" }
+abc182-b = { alias = "b", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_b" }
+abc182-c = { alias = "c", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_c" }
+abc182-d = { alias = "d", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_d" }
+abc182-e = { alias = "e", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_e" }
+abc182-f = { alias = "f", problem = "https://atcoder.jp/contests/abc182/tasks/abc182_f" }
 
 [[bin]]
-name = "abc183-a"
+name = "abc182-a"
 path = "src/bin/a.rs"
 
 [[bin]]
-name = "abc183-b"
+name = "abc182-b"
 path = "src/bin/b.rs"
 
 [[bin]]
-name = "abc183-c"
+name = "abc182-c"
 path = "src/bin/c.rs"
 
 [[bin]]
-name = "abc183-d"
+name = "abc182-d"
 path = "src/bin/d.rs"
 
 [[bin]]
-name = "abc183-e"
+name = "abc182-e"
 path = "src/bin/e.rs"
 
 [[bin]]
-name = "abc183-f"
+name = "abc182-f"
 path = "src/bin/f.rs"
 
 [dependencies]
