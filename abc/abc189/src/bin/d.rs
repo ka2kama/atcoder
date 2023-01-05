@@ -9,7 +9,8 @@ use proconio::{derive_readable, fastout, input};
 
 #[fastout]
 fn main() {
-    input! { N: usize, S: Chars, T: Chars, }
-    let ans: String = S.iter().interleave(&T).collect();
+    todo!();
+    input! { N: usize, A: [i64; N], }
+    let ans = "";
     println!("{}", ans);
 }
