@@ -34,7 +34,10 @@ use proconio::{derive_readable, fastout, input};
 #[fastout]
 fn main() {
     todo!();
-    input! { N: usize, A: [i64; N], }
+    input! { 
+        N: usize, 
+        A: [i64; N], 
+    }
     let ans = "";
     println!("{}", ans);
 }
