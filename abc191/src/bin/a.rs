@@ -9,8 +9,11 @@ use proconio::{derive_readable, fastout, input};
 
 #[fastout]
 fn main() {
-    todo!();
-    input! { N: usize, A: [i64; N], }
-    let ans = "";
+    input! { V: usize, T: usize, S: usize, D: usize }
+    let ans = if V * T <= D && D <= V * S {
+        "No"
+    } else {
+        "Yes"
+    };
     println!("{}", ans);
 }
