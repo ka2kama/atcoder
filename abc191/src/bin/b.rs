@@ -9,8 +9,17 @@ use proconio::{derive_readable, fastout, input};
 
 #[fastout]
 fn main() {
-    todo!();
-    input! { N: usize, A: [i64; N], }
-    let ans = "";
-    println!("{}", ans);
+    input! {
+        N: usize, X: i64,
+        A: [i64; N]
+    }
+
+    let mut ys = A.into_iter().filter(|&y| y != X);
+    if let Some(y) = ys.next() {
+        print!("{}", y);
+        for y in ys {
+            print!(" {}", y);
+        }
+        println!();
+    }
 }
