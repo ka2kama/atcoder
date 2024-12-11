@@ -1,7 +1,6 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
-
+use ascii::{AsciiChar, AsciiString};
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use proconio::marker::{Chars, Usize1};
@@ -13,12 +12,24 @@ struct Mountain {
     height: usize,
 }
 
-#[fastout]
-fn main() {
+struct Input {
+    N: usize,
+    A: Vec<Mountain>,
+}
+
+/// to avoid code completion issues caused by input macro
+fn read_input() -> Input {
     input! {
         N: usize,
         A: [Mountain; N],
     }
+
+    Input { N, A }
+}
+
+#[fastout]
+fn main() {
+    let Input { N, A } = read_input();
 
     let mut it = A.iter();
     let (mut top, mut second) = (it.next().unwrap(), it.next().unwrap());
