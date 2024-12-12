@@ -1,39 +1,17 @@
 #![allow(unused, nonstandard_style)]
 
-use ascii::{AsciiChar, IntoAsciiString};
-use proconio::source::{Readable, Source};
-use proconio::{fastout, input};
-use std::io::BufRead;
-
-enum AsciiChars {}
-
-impl Readable for AsciiChars {
-    type Output = Vec<AsciiChar>;
-    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
-        let token = source.next_token_unwrap();
-        token.into_ascii_string().unwrap().into()
-    }
-}
+use itertools::Itertools;
+use proconio::input;
+use proconio::source::Readable;
 
 fn main() {
     input! {
-        N: usize,
-        A: AsciiChars,
+        H: usize, W: usize,
+        A: [[u64; W]; H],
     }
 
-    let app = App { N, A };
-    app.run();
-}
-
-struct App {
-    N: usize,
-    A: Vec<AsciiChar>,
-}
-
-impl App {
-    #[fastout]
-    fn run(self) {
-        let ans = "";
-        println!("{}", ans);
-    }
+    let v = A.into_iter().flatten().collect_vec();
+    let min = *v.iter().min().unwrap();
+    let ans: u64 = v.into_iter().map(|x| x - min).sum();
+    println!("{}", ans);
 }
