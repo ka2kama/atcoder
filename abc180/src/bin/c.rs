@@ -1,29 +1,39 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
-
-use itertools::Itertools;
-use num_integer::Roots;
-use proconio::marker::{Chars, Usize1};
+use ascii::{AsciiChar, IntoAsciiString};
+use proconio::source::{Readable, Source};
 use proconio::{fastout, input};
+use std::io::BufRead;
 
-#[fastout]
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
+}
+
 fn main() {
-    input! { N: usize, }
-    let v = (1..=N.sqrt())
-        .filter_map(|i| {
-            if N % i == 0 {
-                let mut p = vec![i, N / i];
-                p.dedup();
-                Some(p)
-            } else {
-                None
-            }
-        })
-        .flatten()
-        .sorted();
+    input! {
+        N: usize,
+        A: AsciiChars,
+    }
 
-    for ans in v {
+    let app = App { N, A };
+    app.run();
+}
+
+struct App {
+    N: usize,
+    A: Vec<AsciiChar>,
+}
+
+impl App {
+    #[fastout]
+    fn run(self) {
+        let ans = "";
         println!("{}", ans);
     }
 }

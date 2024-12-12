@@ -1,9 +1,6 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
-
-use itertools::Itertools;
-use proconio::marker::{Chars, Usize1};
+use bstr::B;
 use proconio::{fastout, input};
 
 #[fastout]
