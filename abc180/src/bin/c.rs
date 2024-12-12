@@ -1,39 +1,30 @@
 #![allow(unused, nonstandard_style)]
 
-use ascii::{AsciiChar, IntoAsciiString};
-use proconio::source::{Readable, Source};
+use itertools::Itertools;
 use proconio::{fastout, input};
-use std::io::BufRead;
+use smallvec::SmallVec;
 
-enum AsciiChars {}
-
-impl Readable for AsciiChars {
-    type Output = Vec<AsciiChar>;
-    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
-        let token = source.next_token_unwrap();
-        token.into_ascii_string().unwrap().into()
-    }
-}
-
+#[fastout]
 fn main() {
     input! {
         N: usize,
-        A: AsciiChars,
     }
 
-    let app = App { N, A };
-    app.run();
-}
+    let answers = (1..=N)
+        .take_while(|&i| i * i <= N)
+        .flat_map(|i| {
+            let mut v = SmallVec::<[usize; 2]>::new();
+            if N % i == 0 {
+                v.push(i);
+                if i != N / i {
+                    v.push(N / i);
+                }
+            }
+            v
+        })
+        .sorted_unstable();
 
-struct App {
-    N: usize,
-    A: Vec<AsciiChar>,
-}
-
-impl App {
-    #[fastout]
-    fn run(self) {
-        let ans = "";
+    for ans in answers {
         println!("{}", ans);
     }
 }
