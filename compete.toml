@@ -24,35 +24,45 @@ test-suite = "{{ manifest_dir }}/testcases/{{ bin_alias }}.yml"
 src = '''
 #![allow(unused, nonstandard_style)]
 
-use ascii::{AsciiChar, AsciiString};
+use ascii::{AsciiChar, AsciiString, IntoAsciiString};
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use proconio::marker::{Chars, Usize1};
+use proconio::source::{Readable, Source};
 use proconio::{derive_readable, fastout, input};
+use std::io::BufRead;
 
-struct Input {
-    N: usize,
-    A: Vec<i64>,
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
 }
 
-/// to avoid code completion issues caused by input macro
-fn read_input() -> Input {
+fn main() {
     input! {
         N: usize,
-        A: [i64; N],
+        A: AsciiChars,
     }
 
-    Input { N, A }
+    let app = App { N, A };
+    app.run();
 }
 
-#[fastout]
-fn main() {
-    todo!();
-    let Input { N, A } = read_input();
-    
-    
-    let ans = "";
-    println!("{}", ans);
+struct App {
+    N: usize,
+    A: Vec<AsciiChar>,
+}
+
+impl App {
+    #[fastout]
+    fn run(self) {
+        let ans = "";
+        println!("{}", ans);
+    }
 }
 '''
 
@@ -103,32 +113,32 @@ ndarray = "=0.15.6"
 nalgebra = "=0.32.3"
 alga = "=0.9.3"
 libm = "=0.2.7"
-rand = { version = "=0.8.5", features = ["small_rng", "min_const_gen"] }
-getrandom = "=0.2.10"
-rand_chacha = "=0.3.1"
-rand_core = "=0.6.4"
-rand_hc = "=0.3.2"
-rand_pcg = "=0.3.1"
-rand_distr = "=0.4.3"
-petgraph = "=0.6.3"
+#rand = { version = "=0.8.5", features = ["small_rng", "min_const_gen"] }
+#getrandom = "=0.2.10"
+#rand_chacha = "=0.3.1"
+#rand_core = "=0.6.4"
+#rand_hc = "=0.3.2"
+#rand_pcg = "=0.3.1"
+#rand_distr = "=0.4.3"
+#petgraph = "=0.6.3"
 indexmap = "=2.0.0"
 regex = "=1.9.1"
 #lazy_static = "=1.4.0"
-ordered-float = "=3.7.0"
+#ordered-float = "=3.7.0"
 ascii = "=1.1.0"
-permutohedron = "=0.2.4"
-superslice = "=1.0.0"
+#permutohedron = "=0.2.4"
+#superslice = "=1.0.0"
 itertools = "=0.11.0"
 itertools-num = "=0.1.3"
 maplit = "=1.0.2"
 either = "=1.8.1"
 #im-rc = "=15.1.0"
-fixedbitset = "=0.4.2"
-bitset-fixed = "=0.1.0"
+#fixedbitset = "=0.4.2"
+#bitset-fixed = "=0.1.0"
 proconio = { version = "=0.4.5", features = ["derive"] }
 #text_io = "=0.1.12"
-rustc-hash = "=1.1.0"
-smallvec = { version = "=1.11.0", features = ["const_generics", "const_new", "write", "union", "serde", "arbitrary"] }
+#rustc-hash = "=1.1.0"
+#smallvec = { version = "=1.11.0", features = ["const_generics", "const_new", "write", "union", "serde", "arbitrary"] }
 '''
 dev-dependencies = '''
 #atcoder-202004-lock = { git = "https://github.com/qryxip/atcoder-202004-lock" }
