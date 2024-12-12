@@ -1,33 +1,42 @@
 #![allow(unused, nonstandard_style)]
 
-use std::cmp::Reverse;
-use std::iter;
-
+use ascii::{AsciiChar, AsciiString, IntoAsciiString};
 use itertools::Itertools;
+use num_traits::ToPrimitive;
 use proconio::marker::{Chars, Usize1};
-use proconio::{fastout, input};
+use proconio::source::{Readable, Source};
+use proconio::{derive_readable, fastout, input};
+use std::io::BufRead;
 
-#[fastout]
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
+}
+
 fn main() {
-    input! { N: i64, K: usize, }
-    let ans = itertools::iterate(N, |&x| f(x)).nth(K).unwrap();
-    println!("{}", ans);
+    input! {
+        N: usize,
+        A: AsciiChars,
+    }
+
+    let app = App { N, A };
+    app.run();
 }
 
-fn g1(x: i64) -> i64 {
-    let s: String = x
-        .to_string()
-        .chars()
-        .sorted_by_key(|&c| Reverse(c))
-        .collect();
-    s.parse().unwrap()
+struct App {
+    N: usize,
+    A: Vec<AsciiChar>,
 }
 
-fn g2(x: i64) -> i64 {
-    let s: String = x.to_string().chars().sorted().collect();
-    s.parse().unwrap()
-}
-
-fn f(x: i64) -> i64 {
-    g1(x) - g2(x)
+impl App {
+    #[fastout]
+    fn run(self) {
+        let ans = "";
+        println!("{}", ans);
+    }
 }
