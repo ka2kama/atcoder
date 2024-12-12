@@ -1,30 +1,39 @@
 #![allow(unused, nonstandard_style)]
 
-use std::collections::VecDeque;
-use std::iter;
-
-use itertools::Itertools;
-use proconio::marker::{Chars, Usize1};
+use ascii::{AsciiChar, IntoAsciiString};
+use proconio::source::{Readable, Source};
 use proconio::{fastout, input};
+use std::io::BufRead;
 
-#[fastout]
-fn main() {
-    input! { N: usize, }
-    let ans = (1..=N)
-        .filter(|&x| !x.to_string().contains('7') && !to_oct(x).contains('7'))
-        .count();
-    println!("{}", ans);
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
 }
 
-fn to_oct(x: usize) -> String {
-    let mut d = VecDeque::new();
-    let mut div = x;
-    loop {
-        d.push_front(div % 8);
-        div /= 8;
-        if div == 0 {
-            break;
-        }
+fn main() {
+    input! {
+        N: usize,
+        A: AsciiChars,
     }
-    d.iter().join("")
+
+    let app = App { N, A };
+    app.run();
+}
+
+struct App {
+    N: usize,
+    A: Vec<AsciiChar>,
+}
+
+impl App {
+    #[fastout]
+    fn run(self) {
+        let ans = "";
+        println!("{}", ans);
+    }
 }
