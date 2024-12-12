@@ -20,23 +20,15 @@ impl Readable for AsciiChars {
 
 fn main() {
     input! {
-        N: usize,
         A: AsciiChars,
     }
 
-    let app = App { N, A };
-    app.run();
-}
-
-struct App {
-    N: usize,
-    A: Vec<AsciiChar>,
-}
-
-impl App {
-    #[fastout]
-    fn run(self) {
-        let ans = "";
-        println!("{}", ans);
-    }
+    let yes = A.into_iter().enumerate().all(|(i, ch)| {
+        if i % 2 == 0 {
+            ch.is_lowercase()
+        } else {
+            ch.is_uppercase()
+        }
+    });
+    println!("{}", if yes { "Yes" } else { "No" });
 }
