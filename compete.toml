@@ -42,27 +42,14 @@ impl Readable for AsciiChars {
     }
 }
 
+#[cfg(target_pointer_width = "64")]
 fn main() {
     input! {
-        N: usize,
-        A: AsciiChars,
+        N: isize,
     }
-
-    let app = App { N, A };
-    app.run();
-}
-
-struct App {
-    N: usize,
-    A: Vec<AsciiChar>,
-}
-
-impl App {
-    #[fastout]
-    fn run(self) {
-        let ans = "";
-        println!("{}", ans);
-    }
+ 
+    let ans = "";
+    println!("{}", ans);
 }
 '''
 
