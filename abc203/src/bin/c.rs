@@ -62,16 +62,30 @@ fn main() {
 
     A.sort_unstable_by_key(|f| f.village);
 
-    let last_village = A
+    let Taro {
+        current_village,
+        remaining_money,
+    } = A
         .into_iter()
-        .fold_while(K, |current_village, friend: Friend| {
-            if friend.village > current_village {
-                Done(current_village)
-            } else {
-                Continue(current_village + friend.money)
-            }
-        })
+        .fold_while(
+            Taro {
+                current_village: 0,
+                remaining_money: K,
+            },
+            |taro, friend| {
+                let move_cost = friend.village - taro.current_village;
+                if move_cost > taro.remaining_money {
+                    Done(taro)
+                } else {
+                    Continue(Taro {
+                        current_village: friend.village,
+                        remaining_money: taro.remaining_money - move_cost + friend.money,
+                    })
+                }
+            },
+        )
         .into_inner();
 
+    let last_village = current_village + remaining_money;
     println!("{}", last_village);
 }
