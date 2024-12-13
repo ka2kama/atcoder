@@ -1,6 +1,8 @@
 #![allow(unused, nonstandard_style)]
 
 use ascii::{AsciiChar, IntoAsciiString};
+use itertools::FoldWhile::{Continue, Done};
+use itertools::Itertools;
 use proconio::source::{Readable, Source};
 use proconio::{derive_readable, input};
 use std::io::BufRead;
@@ -46,6 +48,11 @@ struct Friend {
     money: isize,
 }
 
+struct Taro {
+    current_village: isize,
+    remaining_money: isize,
+}
+
 #[cfg(target_pointer_width = "64")]
 fn main() {
     input! {
@@ -55,16 +62,29 @@ fn main() {
 
     A.sort_unstable_by_key(|f| f.village);
 
-    let mut current_village = 0;
-    let mut remaining_money = K;
-    for friend in A {
-        let move_cost = friend.village - current_village;
-        if move_cost > remaining_money {
-            break;
-        }
-        current_village = friend.village;
-        remaining_money = remaining_money - move_cost + friend.money;
-    }
+    let Taro {
+        current_village,
+        remaining_money,
+    } = A
+        .into_iter()
+        .fold_while(
+            Taro {
+                current_village: 0,
+                remaining_money: K,
+            },
+            |taro, friend| {
+                let move_cost = friend.village - taro.current_village;
+                if move_cost > taro.remaining_money {
+                    Done(taro)
+                } else {
+                    Continue(Taro {
+                        current_village: friend.village,
+                        remaining_money: taro.remaining_money - move_cost + friend.money,
+                    })
+                }
+            },
+        )
+        .into_inner();
 
     let last_village = current_village + remaining_money;
     println!("{}", last_village);
