@@ -1,10 +1,7 @@
 ---
 type: Batch
-timelimit: 2s
-match:
-  Float:
-    relative_error: 0.001
-    absolute_error: 0.001
+timelimit: ~
+match: Lines
 
 cases:
   - name: sample1

@@ -1,30 +1,78 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
-
+use ascii::{AsciiChar, IntoAsciiString};
+use itertools::FoldWhile::{Continue, Done};
 use itertools::Itertools;
-use num_traits::ToPrimitive;
-use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
+use proconio::source::{Readable, Source};
+use proconio::{derive_readable, input};
+use std::io::BufRead;
 
-#[derive_readable]
-#[derive(Debug)]
-struct Sake {
-    ml: i64,
-    percent: i64,
+trait AsSize {
+    fn as_isize(&self) -> isize;
+    fn as_usize(&self) -> usize;
 }
 
-#[fastout]
+macro_rules! impl_as_size {
+    ( $t:ty ) => {
+        impl AsSize for $t {
+            fn as_isize(&self) -> isize {
+                (*self).try_into().unwrap()
+            }
+
+            fn as_usize(&self) -> usize {
+                (*self).try_into().unwrap()
+            }
+        }
+    };
+}
+
+impl_as_size!(i8);
+impl_as_size!(i16);
+impl_as_size!(i32);
+impl_as_size!(i64);
+impl_as_size!(isize);
+impl_as_size!(u8);
+impl_as_size!(u16);
+impl_as_size!(u32);
+impl_as_size!(u64);
+impl_as_size!(usize);
+
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
+}
+
+#[derive_readable]
+struct Sake {
+    ml: isize,
+    alcohol: isize,
+}
+
+#[cfg(target_pointer_width = "64")]
 fn main() {
-    input! { N: usize, X:i64, V: [Sake; N], }
-    let lim = X * 100;
-    let total_alcohols = V.iter().scan(0_i64, |total_alcohol, sake| {
-        *total_alcohol += sake.ml * sake.percent;
-        Some(*total_alcohol)
-    });
-    let ans = total_alcohols
-        .enumerate()
-        .find(|(_, total_alcohol)| *total_alcohol > lim)
-        .map_or(-1, |(i, _)| (i + 1) as i64);
+    input! {
+        N: isize, X: isize,
+        A: [Sake; N]
+    }
+
+    let limit = X * 100;
+    let result = A
+        .into_iter()
+        .zip(1..=N)
+        .fold_while(0, |total_alcohol, (sake, i)| {
+            let alcohol = sake.ml * sake.alcohol;
+            if total_alcohol + alcohol > limit {
+                Done(i)
+            } else {
+                Continue(total_alcohol + alcohol)
+            }
+        });
+
+    let ans = if let Done(i) = result { i } else { -1 };
     println!("{}", ans);
 }
