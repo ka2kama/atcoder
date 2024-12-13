@@ -1,31 +1,71 @@
 #![allow(unused, nonstandard_style)]
 
-use std::collections::VecDeque;
-use std::iter;
+use ascii::{AsciiChar, IntoAsciiString};
+use proconio::source::{Readable, Source};
+use proconio::{derive_readable, input};
+use std::io::BufRead;
 
-use itertools::Itertools;
-use num_traits::ToPrimitive;
-use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
-
-#[derive_readable]
-#[derive(Debug)]
-struct Friend {
-    village: i64,
-    money: i64,
+trait AsIUsize {
+    fn as_isize(&self) -> isize;
+    fn as_usize(&self) -> usize;
 }
 
-#[fastout]
+impl AsIUsize for isize {
+    fn as_isize(&self) -> isize {
+        *self
+    }
+
+    fn as_usize(&self) -> usize {
+        (*self).try_into().unwrap()
+    }
+}
+
+impl AsIUsize for usize {
+    fn as_isize(&self) -> isize {
+        (*self).try_into().unwrap()
+    }
+
+    fn as_usize(&self) -> usize {
+        *self
+    }
+}
+
+enum AsciiChars {}
+
+impl Readable for AsciiChars {
+    type Output = Vec<AsciiChar>;
+    fn read<R: BufRead, S: Source<R>>(source: &mut S) -> Vec<AsciiChar> {
+        let token = source.next_token_unwrap();
+        token.into_ascii_string().unwrap().into()
+    }
+}
+
+#[derive_readable]
+struct Friend {
+    village: isize,
+    money: isize,
+}
+
+#[cfg(target_pointer_width = "64")]
 fn main() {
-    input! { N: i64, K: i64, A: [Friend; N], }
-    let mut friends: VecDeque<Friend> = A.into_iter().sorted_by_key(|f| f.village).collect();
-    let ans = {
-        let mut current_village = K;
-        while !friends.is_empty() && friends[0].village <= current_village {
-            let friend = friends.pop_front().unwrap();
-            current_village += friend.money;
+    input! {
+        N: isize, K: isize,
+        mut A: [Friend; N],
+    }
+
+    A.sort_unstable_by_key(|f| f.village);
+
+    let mut current_village = 0;
+    let mut remaining_money = K;
+    for friend in A {
+        let move_cost = friend.village - current_village;
+        if move_cost > remaining_money {
+            break;
         }
-        current_village
-    };
-    println!("{}", ans);
+        current_village = friend.village;
+        remaining_money = remaining_money - move_cost + friend.money;
+    }
+
+    let last_village = current_village + remaining_money;
+    println!("{}", last_village);
 }

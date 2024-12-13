@@ -1,19 +1,15 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
-
 use itertools::Itertools;
-use maplit::hashset;
-use num_traits::ToPrimitive;
-use proconio::marker::{Chars, Usize1};
-use proconio::{fastout, input};
-
-#[fastout]
+use proconio::input;
+use proconio::source::Readable;
 fn main() {
-    input! { a: i64, b: i64, c: i64, }
-    let ans = match hashset![a, b, c].len() {
+    input! {
+        A: isize, B: isize, C: isize,
+    }
+    let ans = match [A, B, C].into_iter().unique().count() {
         3 => 0,
-        _ => a ^ b ^ c,
+        _ => A ^ B ^ C,
     };
     println!("{}", ans);
 }
