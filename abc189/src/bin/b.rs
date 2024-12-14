@@ -1,7 +1,6 @@
 #![allow(unused, nonstandard_style)]
 
 use ascii::{AsciiChar, IntoAsciiString};
-use itertools::FoldWhile::{Continue, Done};
 use itertools::Itertools;
 use proconio::source::{Readable, Source};
 use proconio::{derive_readable, input};
@@ -59,20 +58,15 @@ fn main() {
         N: isize, X: isize,
         A: [Sake; N]
     }
-
     let limit = X * 100;
-    let result = A
+    let ans = A
         .into_iter()
-        .zip(1..=N)
-        .fold_while(0, |total_alcohol, (sake, i)| {
-            let alcohol = sake.ml * sake.alcohol;
-            if total_alcohol + alcohol > limit {
-                Done(i)
-            } else {
-                Continue(total_alcohol + alcohol)
-            }
-        });
+        .scan(0, |total_alcohol, sake| {
+            *total_alcohol += sake.ml * sake.alcohol;
+            Some(*total_alcohol)
+        })
+        .find_position(|total_alcohol| *total_alcohol > limit)
+        .map_or(-1, |(i, _)| i.as_isize() + 1);
 
-    let ans = if let Done(i) = result { i } else { -1 };
     println!("{}", ans);
 }
