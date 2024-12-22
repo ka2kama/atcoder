@@ -1,11 +1,14 @@
 #![allow(unused, nonstandard_style)]
 
-use std::iter;
+use std::{iter, str};
 
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
+
+#[derive_readable]
+struct Foo ;
 
 #[fastout]
 fn main() {
