@@ -2,13 +2,11 @@
 
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
-use crate::my_lib::*;
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
+use maplit::hashset;
+use nalgebra::coordinates::X;
 use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
-use std::collections::*;
-use std::mem;
+use proconio::{fastout, input};
 
 pub mod my_lib {
     pub mod my_iter {
@@ -130,7 +128,7 @@ fn main() {
         T: Chars
     }
 
-    let mut houses = hashmap![];
+    let mut houses = hashset![];
     let (mut x, mut y) = (X, Y);
     for command in T {
         let (next_x, next_y) = match command {
@@ -146,12 +144,11 @@ fn main() {
             ch => {
                 (x, y) = (next_x, next_y);
                 if ch == '@' {
-                    houses.insert((x, y), true);
+                    houses.insert((x, y));
                 }
             }
         }
     }
 
-    let cnt = houses.values().filter(|&arrived| *arrived).count();
-    println!("{} {} {}", x + 1, y + 1, cnt);
+    println!("{} {} {}", x + 1, y + 1, houses.len());
 }
