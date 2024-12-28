@@ -2,13 +2,8 @@
 
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
-use crate::my_lib::*;
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
-use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
-use std::collections::*;
-use std::mem;
+use proconio::{fastout, input};
 
 pub mod my_lib {
     pub mod my_iter {
@@ -49,7 +44,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
@@ -125,33 +120,9 @@ struct Pos {
 #[fastout]
 fn main() {
     input! {
-        H: isize, W: isize, X: Usize1, Y: Usize1,
-        A: [Chars; H],
-        T: Chars
+        A: [isize; 4],
     }
 
-    let mut houses = hashmap![];
-    let (mut x, mut y) = (X, Y);
-    for command in T {
-        let (next_x, next_y) = match command {
-            'U' => (x - 1, y),
-            'D' => (x + 1, y),
-            'L' => (x, y - 1),
-            'R' => (x, y + 1),
-            _ => unreachable!(),
-        };
-
-        match A[next_x][next_y] {
-            '#' => continue,
-            ch => {
-                (x, y) = (next_x, next_y);
-                if ch == '@' {
-                    houses.insert((x, y), true);
-                }
-            }
-        }
-    }
-
-    let cnt = houses.values().filter(|&arrived| *arrived).count();
-    println!("{} {} {}", x + 1, y + 1, cnt);
+    let ans = A.iter().unique().count();
+    println!("{}", if ans == 2 { "Yes" } else { "No" });
 }

@@ -2,13 +2,10 @@
 
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
-use crate::my_lib::*;
+use amplify::confinement::Collection;
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
-use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
-use std::collections::*;
-use std::mem;
+use proconio::marker::Chars;
+use proconio::{fastout, input};
 
 pub mod my_lib {
     pub mod my_iter {
@@ -49,7 +46,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                pub(in crate::my_lib::my_iter) fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
@@ -115,43 +112,50 @@ pub mod my_lib {
     }
 }
 
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-struct Pos {
-    x: usize,
-    y: usize,
-}
-
 #[cfg(target_pointer_width = "64")]
 #[fastout]
 fn main() {
     input! {
-        H: isize, W: isize, X: Usize1, Y: Usize1,
-        A: [Chars; H],
+        K: isize,
+        S: Chars,
         T: Chars
     }
 
-    let mut houses = hashmap![];
-    let (mut x, mut y) = (X, Y);
-    for command in T {
-        let (next_x, next_y) = match command {
-            'U' => (x - 1, y),
-            'D' => (x + 1, y),
-            'L' => (x, y - 1),
-            'R' => (x, y + 1),
-            _ => unreachable!(),
-        };
+    let ans = if check(S, T) { "Yes" } else { "No" };
+    println!("{}", ans);
+}
 
-        match A[next_x][next_y] {
-            '#' => continue,
-            ch => {
-                (x, y) = (next_x, next_y);
-                if ch == '@' {
-                    houses.insert((x, y), true);
-                }
-            }
-        }
+fn check(S: Vec<char>, T: Vec<char>) -> bool {
+    if S == T {
+        return true;
     }
 
-    let cnt = houses.values().filter(|&arrived| *arrived).count();
-    println!("{} {} {}", x + 1, y + 1, cnt);
+    // check: S中の文字を1つ選び、別の1つの文字に変更する。
+    if S.len() == T.len() {
+        let diff_cnt = S
+            .into_iter()
+            .zip(T.into_iter())
+            .filter(|(a, b)| a != b)
+            .count();
+        return diff_cnt <= 1;
+    }
+
+    let (longer, shorter) = if S.len() > T.len() { (S, T) } else { (T, S) };
+    if longer.len() - shorter.len() > 1 {
+        return false;
+    }
+    // 同じ文字列 + 末尾1文字
+    if &longer[..=shorter.len() - 1] == &shorter {
+        return true;
+    }
+    let mut op_cnt = 0;
+    for (i, &ch) in shorter.iter().enumerate() {
+        while i + op_cnt < longer.len() {
+            if ch == longer[i + op_cnt] {
+                break;
+            }
+            op_cnt += 1;
+        }
+    }
+    op_cnt == 1
 }
