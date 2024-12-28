@@ -2,13 +2,10 @@
 
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
-use crate::my_lib::*;
+use amplify::confinement::Collection;
+use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
-use proconio::marker::{Chars, Usize1};
-use proconio::{derive_readable, fastout, input};
-use std::collections::*;
-use std::mem;
+use proconio::{fastout, input};
 
 pub mod my_lib {
     pub mod my_iter {
@@ -49,7 +46,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                pub(in crate::my_lib::my_iter) fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
@@ -115,43 +112,55 @@ pub mod my_lib {
     }
 }
 
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-struct Pos {
-    x: usize,
-    y: usize,
+fn calc_max_buildings(building_indices: IndexSet<isize>) -> isize {
+    if building_indices.len() < 2 {
+        return building_indices.len().as_isize();
+    }
+
+    let max_interval = *building_indices.last().unwrap() - *building_indices.first().unwrap();
+    let start_and_intervals = building_indices
+        .iter()
+        .flat_map(|&i| (1..=max_interval).map(move |interval| (i, interval)));
+
+    let mut max_buildings = isize::MIN;
+    for &start_index in &building_indices {
+        for interval in 1..=max_interval {
+            let buildings = count_by_interval(start_index, interval, &building_indices);
+            max_buildings = max_buildings.max(buildings);
+        }
+    }
+    max_buildings
+}
+
+fn count_by_interval(start: isize, interval: isize, building_indices: &IndexSet<isize>) -> isize {
+    let mut current = start;
+    let mut count = 0;
+    while building_indices.contains(&current) {
+        count += 1;
+        current += interval;
+    }
+    count
 }
 
 #[cfg(target_pointer_width = "64")]
 #[fastout]
 fn main() {
     input! {
-        H: isize, W: isize, X: Usize1, Y: Usize1,
-        A: [Chars; H],
-        T: Chars
+        N: isize,
+        H: [isize; N],
     }
 
-    let mut houses = hashmap![];
-    let (mut x, mut y) = (X, Y);
-    for command in T {
-        let (next_x, next_y) = match command {
-            'U' => (x - 1, y),
-            'D' => (x + 1, y),
-            'L' => (x, y - 1),
-            'R' => (x, y + 1),
-            _ => unreachable!(),
-        };
-
-        match A[next_x][next_y] {
-            '#' => continue,
-            ch => {
-                (x, y) = (next_x, next_y);
-                if ch == '@' {
-                    houses.insert((x, y), true);
-                }
-            }
-        }
+    let mut im = IndexMap::new();
+    for (i, &h) in H.iter().enumerate() {
+        im.entry(h)
+            .or_insert_with(IndexSet::new)
+            .insert(i.as_isize());
     }
 
-    let cnt = houses.values().filter(|&arrived| *arrived).count();
-    println!("{} {} {}", x + 1, y + 1, cnt);
+    let ans = im
+        .into_iter()
+        .map(|(_, v)| calc_max_buildings(v))
+        .max()
+        .unwrap();
+    println!("{}", ans);
 }

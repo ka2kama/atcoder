@@ -73,7 +73,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                pub(in crate::my_lib::my_iter) fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
