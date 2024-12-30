@@ -3,27 +3,42 @@
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
 use crate::my_lib::*;
+use indexmap::{indexmap, indexset};
 use itertools::Itertools;
 use maplit::{hashmap, hashset};
+use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
 use std::collections::*;
 use std::mem;
 
+fn gcd(mut a: isize, mut b: isize) -> isize {
+    while b != 0 {
+        (a, b) = (b, a % b);
+    }
+    a
+}
+
+fn lcm(a: isize, b: isize) -> isize {
+    (a * b).abs() / gcd(a, b)
+}
+
 #[cfg(target_pointer_width = "64")]
 #[fastout]
 fn main() {
     input! {
-        N: isize,
+        A: isize, B: isize,
     }
-    let ans = 1;
+    let ans = lcm(A, B);
     println!("{}", ans);
 }
 
 pub mod my_lib {
     pub mod my_iter {
         use crate::my_lib::my_iter::scan_left::ScanLeft;
+        use crate::my_lib::my_num::AsSize;
         use std::iter::Rev;
+
         pub trait MyIterator: Iterator {
             #[inline]
             fn scan_left<St, F>(self, initial_state: St, f: F) -> ScanLeft<Self, St, F>
@@ -43,6 +58,24 @@ pub mod my_lib {
                 F: FnMut(&mut St, Self::Item),
             {
                 self.rev().scan_left(initial_state, f)
+            }
+
+            #[inline]
+            fn collect_string(self) -> String
+            where
+                Self: Sized,
+                String: FromIterator<Self::Item>,
+            {
+                self.collect()
+            }
+
+            #[inline]
+            fn sum_isize<A>(self) -> isize
+            where
+                A: AsSize,
+                Self: Sized + Iterator<Item = A>,
+            {
+                self.map(|x| x.as_isize()).sum()
             }
         }
 
