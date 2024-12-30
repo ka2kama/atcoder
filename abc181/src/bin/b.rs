@@ -16,9 +16,11 @@ use std::mem;
 fn main() {
     input! {
         N: isize,
+        X: [(isize, isize); N]
     }
+    let X: Vec<(isize, isize)> = X;
 
-    let ans = 1;
+    let ans = X.into_iter().flat_map(|(a, b)| a..=b).sum_isize();
     println!("{}", ans);
 }
 

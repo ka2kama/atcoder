@@ -18,7 +18,7 @@ fn main() {
         N: isize,
     }
 
-    let ans = 1;
+    let ans = if N % 2 == 0 { "White" } else { "Black" };
     println!("{}", ans);
 }
 

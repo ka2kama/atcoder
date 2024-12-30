@@ -11,14 +11,37 @@ use proconio::{derive_readable, fastout, input};
 use std::collections::*;
 use std::mem;
 
+fn cross_product(a: Point, b: Point, c: Point) -> isize {
+    // Define vectors AB and AC
+    let ab = (b.x - a.x, b.y - a.y);
+    let ac = (c.x - a.x, c.y - a.y);
+
+    // Compute the cross product of AB and AC
+    ab.0 * ac.1 - ab.1 * ac.0
+}
+
+#[derive(Debug, Copy, Clone)]
+#[derive_readable]
+struct Point {
+    x: isize,
+    y: isize,
+}
+
 #[cfg(target_pointer_width = "64")]
 #[fastout]
 fn main() {
     input! {
         N: isize,
+        A: [Point; N],
     }
+    let A: Vec<Point> = A;
+    let is_collinear = A
+        .into_iter()
+        .combinations(3)
+        .map(|p| cross_product(p[0], p[1], p[2]))
+        .any(|cp| cp == 0);
 
-    let ans = 1;
+    let ans = if is_collinear { "Yes" } else { "No" };
     println!("{}", ans);
 }
 
