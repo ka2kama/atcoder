@@ -3,28 +3,64 @@
 use crate::my_lib::my_iter::*;
 use crate::my_lib::my_num::*;
 use crate::my_lib::*;
-use indexmap::{indexmap, indexset};
+use indexmap::{indexmap, indexset, IndexMap};
 use itertools::Itertools;
 use maplit::{hashmap, hashset};
+use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
+use std::collections::hash_map::IntoIter;
 use std::collections::*;
 use std::mem;
 
-fn cross_product(a: Point, b: Point, c: Point) -> isize {
-    // Define vectors AB and AC
-    let ab = (b.x - a.x, b.y - a.y);
-    let ac = (c.x - a.x, c.y - a.y);
-
-    // Compute the cross product of AB and AC
-    ab.0 * ac.1 - ab.1 * ac.0
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+enum Slope {
+    Vertical,
+    Horizontal,
+    Inclined { dx: isize, dy: isize },
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 #[derive_readable]
 struct Point {
     x: isize,
     y: isize,
+}
+
+fn to_collinear_points(pivot: &Point, A: &[Point]) -> HashMap<Slope, Vec<Point>> {
+    A.iter()
+        .filter(|p2| **p2 != *pivot)
+        .map(|p2| (calc_slope(pivot, p2), p2.clone()))
+        .into_group_map()
+}
+
+fn calc_slope(p1: &Point, p2: &Point) -> Slope {
+    let dx = p2.x - p1.x;
+    let dy = p2.y - p1.y;
+
+    if dx == 0 {
+        Slope::Vertical
+    } else if dy == 0 {
+        Slope::Horizontal
+    } else {
+        let g = dx.gcd(&dy);
+
+        let dx_reduced = dx / g;
+        let dy_reduced = dy / g;
+
+        // Normalize sign: we can ensure dx_reduced is always positive
+        // or if dx_reduced < 0, then multiply both by -1
+        let (dx_norm, dy_norm) = if dx_reduced < 0 {
+            (-dx_reduced, -dy_reduced)
+        } else {
+            (dx_reduced, dy_reduced)
+        };
+
+        Slope::Inclined {
+            dx: dx_norm,
+            dy: dy_norm,
+        }
+    }
 }
 
 #[cfg(target_pointer_width = "64")]
@@ -32,19 +68,19 @@ struct Point {
 fn main() {
     input! {
         N: isize,
-        A: [Point; N],
+        mut A: [Point; N],
     }
+    A.sort_unstable();
     let A: Vec<Point> = A;
-    let is_collinear = A
-        .into_iter()
-        .combinations(3)
-        .map(|p| cross_product(p[0], p[1], p[2]))
-        .any(|cp| cp == 0);
 
-    let ans = if is_collinear { "Yes" } else { "No" };
+    let has_collinear = A
+        .iter()
+        .flat_map(|p| to_collinear_points(p, &A).into_values())
+        .any(|v| v.len() >= 2);
+
+    let ans = if has_collinear { "Yes" } else { "No" };
     println!("{}", ans);
 }
-
 pub mod my_lib {
     pub mod my_iter {
         use crate::my_lib::my_iter::scan_left::ScanLeft;
