@@ -122,24 +122,17 @@ fn calc_max_buildings(building_indices: IndexSet<isize>) -> isize {
         .iter()
         .flat_map(|&i| (1..=max_interval).map(move |interval| (i, interval)));
 
-    let mut max_buildings = isize::MIN;
-    for &start_index in &building_indices {
-        for interval in 1..=max_interval {
-            let buildings = count_by_interval(start_index, interval, &building_indices);
-            max_buildings = max_buildings.max(buildings);
-        }
-    }
-    max_buildings
+    start_and_intervals
+        .map(|(start_index, interval)| count_by_interval(start_index, interval, &building_indices))
+        .max()
+        .unwrap()
 }
 
 fn count_by_interval(start: isize, interval: isize, building_indices: &IndexSet<isize>) -> isize {
-    let mut current = start;
-    let mut count = 0;
-    while building_indices.contains(&current) {
-        count += 1;
-        current += interval;
-    }
-    count
+    itertools::iterate(start, |&current| current + interval)
+        .take_while(|current| building_indices.contains(current))
+        .count()
+        .as_isize()
 }
 
 #[cfg(target_pointer_width = "64")]
