@@ -24,32 +24,54 @@ test-suite = "{{ manifest_dir }}/testcases/{{ bin_alias }}.yml"
 src = '''
 #![allow(unused, nonstandard_style)]
 
-use crate::my_lib::my_iter::*;
-use crate::my_lib::my_num::*;
+use crate::my_lib::iter::*;
+use crate::my_lib::models::*;
+use crate::my_lib::num::*;
 use crate::my_lib::*;
-use itertools::Itertools;
 use indexmap::{indexmap, indexset};
+use itertools::Itertools;
 use maplit::{hashmap, hashset};
+use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
 use std::collections::*;
 use std::mem;
 
-#[cfg(target_pointer_width = "64")]
-#[fastout]
-fn main() {
-    input! {
-        N: isize,
+pub mod my_lib {
+
+    pub mod models {
+        use proconio::derive_readable;
+
+        #[derive_readable]
+        #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
+        pub struct Point {
+            pub x: i64,
+            pub y: i64,
+        }
+
+        impl Point {
+            pub fn new(x: i64, y: i64) -> Self {
+                Self { x, y }
+            }
+        }
+
+        #[derive_readable]
+        #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+        pub struct PointF {
+            pub x: f64,
+            pub y: f64,
+        }
+
+        impl PointF {
+            pub fn new(x: f64, y: f64) -> Self {
+                Self { x, y }
+            }
+        }
     }
 
-    let ans = 1;
-    println!("{}", ans);
-}
-
-pub mod my_lib {
-    pub mod my_iter {
-        use crate::my_lib::my_iter::scan_left::ScanLeft;
-        use crate::my_lib::my_num::AsSize;
+    pub mod iter {
+        use crate::my_lib::iter::scan_left::ScanLeft;
+        use crate::my_lib::num::AsNumber;
         use std::iter::Rev;
 
         pub trait MyIterator: Iterator {
@@ -83,12 +105,12 @@ pub mod my_lib {
             }
 
             #[inline]
-            fn sum_isize<A>(self) -> isize
+            fn sum_i64<A>(self) -> i64
             where
-                A: AsSize,
-                Self: Sized + Iterator<Item=A>,
+                A: AsNumber,
+                Self: Sized + Iterator<Item = A>,
             {
-                self.map(|x| x.as_isize()).sum()
+                self.map(|x| x.as_i64()).sum()
             }
         }
 
@@ -105,7 +127,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in crate::my_lib::my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                pub(in crate::my_lib::iter) fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
@@ -138,16 +160,16 @@ pub mod my_lib {
         }
     }
 
-    pub mod my_num {
-        pub trait AsSize {
-            fn as_isize(&self) -> isize;
+    pub mod num {
+        pub trait AsNumber {
+            fn as_i64(&self) -> i64;
             fn as_usize(&self) -> usize;
         }
 
-        macro_rules! impl_as_size {
+        macro_rules! impl_as_number {
             ( $t:ty ) => {
-                impl AsSize for $t {
-                    fn as_isize(&self) -> isize {
+                impl AsNumber for $t {
+                    fn as_i64(&self) -> i64 {
                         (*self).try_into().unwrap()
                     }
 
@@ -158,17 +180,28 @@ pub mod my_lib {
             };
         }
 
-        impl_as_size!(i8);
-        impl_as_size!(i16);
-        impl_as_size!(i32);
-        impl_as_size!(i64);
-        impl_as_size!(isize);
-        impl_as_size!(u8);
-        impl_as_size!(u16);
-        impl_as_size!(u32);
-        impl_as_size!(u64);
-        impl_as_size!(usize);
+        impl_as_number!(i8);
+        impl_as_number!(i16);
+        impl_as_number!(i32);
+        impl_as_number!(i64);
+        impl_as_number!(isize);
+        impl_as_number!(u8);
+        impl_as_number!(u16);
+        impl_as_number!(u32);
+        impl_as_number!(u64);
+        impl_as_number!(usize);
     }
+}
+
+#[cfg(target_pointer_width = "64")]
+#[fastout]
+fn main() {
+    input! {
+        N: i64,
+    }
+
+    let ans = 1;
+    println!("{}", ans);
 }
 '''
 
