@@ -1,90 +1,53 @@
 #![allow(unused, nonstandard_style)]
 
-use crate::my_lib::my_iter::*;
-use crate::my_lib::my_num::*;
+use crate::my_lib::iter::*;
+use crate::my_lib::models::*;
+use crate::my_lib::num::*;
 use crate::my_lib::*;
-use indexmap::{indexmap, indexset, IndexMap};
+use indexmap::{indexmap, indexset};
 use itertools::Itertools;
 use maplit::{hashmap, hashset};
 use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
-use std::collections::hash_map::IntoIter;
 use std::collections::*;
 use std::mem;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
-enum Slope {
-    Vertical,
-    Horizontal,
-    Inclined { dx: isize, dy: isize },
-}
+pub mod my_lib {
 
-#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
-#[derive_readable]
-struct Point {
-    x: isize,
-    y: isize,
-}
+    pub mod models {
+        use proconio::derive_readable;
 
-fn to_collinear_points(pivot: &Point, A: &[Point]) -> HashMap<Slope, Vec<Point>> {
-    A.iter()
-        .filter(|p2| **p2 != *pivot)
-        .map(|p2| (calc_slope(pivot, p2), p2.clone()))
-        .into_group_map()
-}
+        #[derive_readable]
+        #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
+        pub struct Point {
+            pub x: i64,
+            pub y: i64,
+        }
 
-fn calc_slope(p1: &Point, p2: &Point) -> Slope {
-    let dx = p2.x - p1.x;
-    let dy = p2.y - p1.y;
+        impl Point {
+            pub fn new(x: i64, y: i64) -> Self {
+                Self { x, y }
+            }
+        }
 
-    if dx == 0 {
-        Slope::Vertical
-    } else if dy == 0 {
-        Slope::Horizontal
-    } else {
-        let g = dx.gcd(&dy);
+        #[derive_readable]
+        #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+        pub struct PointF {
+            pub x: f64,
+            pub y: f64,
+        }
 
-        let dx_reduced = dx / g;
-        let dy_reduced = dy / g;
-
-        // Normalize sign: we can ensure dx_reduced is always positive
-        // or if dx_reduced < 0, then multiply both by -1
-        let (dx_norm, dy_norm) = if dx_reduced < 0 {
-            (-dx_reduced, -dy_reduced)
-        } else {
-            (dx_reduced, dy_reduced)
-        };
-
-        Slope::Inclined {
-            dx: dx_norm,
-            dy: dy_norm,
+        impl PointF {
+            pub fn new(x: f64, y: f64) -> Self {
+                Self { x, y }
+            }
         }
     }
-}
 
-#[cfg(target_pointer_width = "64")]
-#[fastout]
-fn main() {
-    input! {
-        N: isize,
-        mut A: [Point; N],
-    }
-    A.sort_unstable();
-    let A: Vec<Point> = A;
-
-    let has_collinear = A
-        .iter()
-        .flat_map(|p| to_collinear_points(p, &A).into_values())
-        .any(|v| v.len() >= 2);
-
-    let ans = if has_collinear { "Yes" } else { "No" };
-    println!("{}", ans);
-}
-pub mod my_lib {
-    pub mod my_iter {
-        use crate::my_lib::my_iter::scan_left::ScanLeft;
-        use crate::my_lib::my_num::AsSize;
+    pub mod iter {
+        use crate::my_lib::iter::scan_left::ScanLeft;
+        use crate::my_lib::num::AsNumber;
         use std::iter::Rev;
 
         pub trait MyIterator: Iterator {
@@ -118,12 +81,12 @@ pub mod my_lib {
             }
 
             #[inline]
-            fn sum_isize<A>(self) -> isize
+            fn sum_i64<A>(self) -> i64
             where
-                A: AsSize,
+                A: AsNumber,
                 Self: Sized + Iterator<Item = A>,
             {
-                self.map(|x| x.as_isize()).sum()
+                self.map(|x| x.as_i64()).sum()
             }
         }
 
@@ -140,7 +103,7 @@ pub mod my_lib {
 
             impl<I, St, F> ScanLeft<I, St, F> {
                 #[inline]
-                pub(in crate::my_lib::my_iter) fn new(iter: I, state: St, f: F) -> Self {
+                pub(in crate::my_lib::iter) fn new(iter: I, state: St, f: F) -> Self {
                     Self {
                         iter,
                         state,
@@ -173,16 +136,16 @@ pub mod my_lib {
         }
     }
 
-    pub mod my_num {
-        pub trait AsSize {
-            fn as_isize(&self) -> isize;
+    pub mod num {
+        pub trait AsNumber {
+            fn as_i64(&self) -> i64;
             fn as_usize(&self) -> usize;
         }
 
-        macro_rules! impl_as_size {
+        macro_rules! impl_as_number {
             ( $t:ty ) => {
-                impl AsSize for $t {
-                    fn as_isize(&self) -> isize {
+                impl AsNumber for $t {
+                    fn as_i64(&self) -> i64 {
                         (*self).try_into().unwrap()
                     }
 
@@ -193,15 +156,81 @@ pub mod my_lib {
             };
         }
 
-        impl_as_size!(i8);
-        impl_as_size!(i16);
-        impl_as_size!(i32);
-        impl_as_size!(i64);
-        impl_as_size!(isize);
-        impl_as_size!(u8);
-        impl_as_size!(u16);
-        impl_as_size!(u32);
-        impl_as_size!(u64);
-        impl_as_size!(usize);
+        impl_as_number!(i8);
+        impl_as_number!(i16);
+        impl_as_number!(i32);
+        impl_as_number!(i64);
+        impl_as_number!(isize);
+        impl_as_number!(u8);
+        impl_as_number!(u16);
+        impl_as_number!(u32);
+        impl_as_number!(u64);
+        impl_as_number!(usize);
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum Slope {
+    Vertical,
+    Horizontal,
+    Positive { dx: i64, dy: i64 },
+}
+
+fn exist_collinear_among_n(mut A: Vec<Point>, n: i64) -> bool {
+    if n < 2 {
+        return false;
+    }
+    A.sort_unstable();
+    A.dedup();
+    let A = A.as_slice();
+    let required_same_slope_cnt = n - 1;
+    for pivot in A {
+        let mut slope_cnt = hashmap! {};
+        for p2 in A {
+            if p2 == pivot {
+                continue;
+            }
+
+            let dx = p2.x - pivot.x;
+            let dy = p2.y - pivot.y;
+            let slope = if dx == 0 {
+                Slope::Vertical
+            } else if dy == 0 {
+                Slope::Horizontal
+            } else {
+                // to positive incline
+                let (dx, dy) = if dx < 0 { (-dx, -dy) } else { (dx, dy) };
+
+                // reduce to lowest terms
+                let g = dx.gcd(&dy);
+                let (dx, dy) = (dx / g, dy / g);
+
+                Slope::Positive { dx, dy }
+            };
+
+            let cnt = slope_cnt.entry(slope).or_insert(0);
+            *cnt += 1;
+            if *cnt >= required_same_slope_cnt {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+#[cfg(target_pointer_width = "64")]
+#[fastout]
+fn main() {
+    input! {
+        N: i64,
+        A: [Point; N],
+    }
+
+    let ans = if exist_collinear_among_n(A, 3) {
+        "Yes"
+    } else {
+        "No"
+    };
+    println!("{}", ans);
 }
