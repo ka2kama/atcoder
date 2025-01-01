@@ -6,7 +6,6 @@ use crate::my_lib::num::*;
 use crate::my_lib::*;
 use indexmap::{indexmap, indexset};
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
 use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
@@ -169,6 +168,41 @@ pub mod my_lib {
     }
 }
 
+fn solve(N: i64) -> i64 {
+    let m = N % 3;
+    if m == 0 {
+        return 0;
+    }
+
+    let v = N
+        .to_string()
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as i64)
+        .collect_vec();
+
+    if m == 1 {
+        if v.len() > 1 && v.iter().any(|x| *x % 3 == 1) {
+            return 1;
+        }
+
+        if v.len() > 2 && v.iter().filter(|x| **x % 3 == 2).take(2).count() == 2 {
+            return 2;
+        }
+    }
+
+    if m == 2 {
+        if v.len() > 1 && v.iter().any(|x| *x % 3 == 2) {
+            return 1;
+        }
+
+        if v.len() > 2 && v.iter().filter(|x| **x % 3 == 1).take(2).count() == 2 {
+            return 2;
+        }
+    }
+
+    -1
+}
+
 #[cfg(target_pointer_width = "64")]
 #[fastout]
 fn main() {
@@ -176,6 +210,6 @@ fn main() {
         N: i64,
     }
 
-    let ans = 1;
+    let ans = solve(N);
     println!("{}", ans);
 }

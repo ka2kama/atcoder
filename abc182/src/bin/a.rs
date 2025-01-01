@@ -6,7 +6,6 @@ use crate::my_lib::num::*;
 use crate::my_lib::*;
 use indexmap::{indexmap, indexset};
 use itertools::Itertools;
-use maplit::{hashmap, hashset};
 use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
