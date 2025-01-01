@@ -185,7 +185,7 @@ fn solve(N: i64) -> i64 {
             return 1;
         }
 
-        if v.len() > 2 && v.iter().filter(|x| **x % 3 == 2).take(2).count() == 2 {
+        if v.len() > 2 {
             return 2;
         }
     }
@@ -195,7 +195,7 @@ fn solve(N: i64) -> i64 {
             return 1;
         }
 
-        if v.len() > 2 && v.iter().filter(|x| **x % 3 == 1).take(2).count() == 2 {
+        if v.len() > 2 {
             return 2;
         }
     }
