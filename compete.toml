@@ -38,7 +38,6 @@ use std::collections::*;
 use std::mem;
 
 pub mod my_lib {
-
     pub mod models {
         use proconio::derive_readable;
 

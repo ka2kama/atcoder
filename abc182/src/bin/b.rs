@@ -11,6 +11,7 @@ use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
 use std::collections::*;
+use std::convert::identity;
 use std::mem;
 
 pub mod my_lib {
@@ -174,8 +175,15 @@ pub mod my_lib {
 fn main() {
     input! {
         N: i64,
+        mut A: [i64; N]
     }
-
-    let ans = 1;
+    A.sort_unstable();
+    let A: Vec<i64> = A;
+    let max = *A.last().unwrap();
+    let ans = (2..=max)
+        .map(|i| (i, A.iter().filter(|&x| *x % i == 0).count()))
+        .max_by_key(|(_, cnt)| *cnt)
+        .unwrap()
+        .0;
     println!("{}", ans);
 }

@@ -14,7 +14,6 @@ use std::collections::*;
 use std::mem;
 
 pub mod my_lib {
-
     pub mod models {
         use proconio::derive_readable;
 
@@ -173,9 +172,9 @@ pub mod my_lib {
 #[fastout]
 fn main() {
     input! {
-        N: i64,
+        A: i64, B:i64
     }
 
-    let ans = 1;
-    println!("{}", ans);
+    let lim = 2 * A + 100;
+    println!("{}", lim - B);
 }
