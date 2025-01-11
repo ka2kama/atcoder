@@ -1,20 +1,19 @@
 #![allow(unused, nonstandard_style)]
 
-use std::{collections::*, convert::identity, mem};
-
+use crate::my_lib::iter::*;
+use crate::my_lib::models::*;
+use crate::my_lib::num::*;
+use crate::my_lib::*;
 use indexmap::{indexmap, indexset};
 use itertools::Itertools;
 use maplit::{hashmap, hashset};
 use num_integer::Integer;
-use proconio::{
-   derive_readable, fastout, input,
-   marker::{Chars, Usize1},
-};
-
-use crate::my_lib::{iter::*, models::*, num::*, *};
+use proconio::marker::{Chars, Usize1};
+use proconio::{derive_readable, fastout, input};
+use std::collections::*;
+use std::mem;
 
 pub mod my_lib {
-
    pub mod models {
       use proconio::derive_readable;
 
@@ -46,9 +45,9 @@ pub mod my_lib {
    }
 
    pub mod iter {
+      use crate::my_lib::iter::scan_left::ScanLeft;
+      use crate::my_lib::num::AsNumber;
       use std::iter::Rev;
-
-      use crate::my_lib::{iter::scan_left::ScanLeft, num::AsNumber};
 
       pub trait MyIterator: Iterator {
          #[inline]
@@ -88,6 +87,15 @@ pub mod my_lib {
          {
             self.map(|x| x.as_i64()).sum()
          }
+
+         #[inline]
+         fn product_i64<A>(self) -> i64
+         where
+            A: AsNumber,
+            Self: Sized + Iterator<Item = A>,
+         {
+            self.map(|x| x.as_i64()).product()
+         }
       }
 
       impl<I: Iterator> MyIterator for I {}
@@ -95,9 +103,9 @@ pub mod my_lib {
       mod scan_left {
          #[derive(Clone)]
          pub struct ScanLeft<I, St, F> {
-            iter:    I,
-            state:   St,
-            f:       F,
+            iter: I,
+            state: St,
+            f: F,
             started: bool,
          }
 
@@ -173,16 +181,8 @@ pub mod my_lib {
 #[fastout]
 fn main() {
    input! {
-       N: i64,
-       mut A: [i64; N]
+       S: Chars,
    }
-   A.sort_unstable();
-   let A: Vec<i64> = A;
-   let max = *A.last().unwrap();
-   let ans = (2..=max)
-      .map(|i| (i, A.iter().filter(|&x| *x % i == 0).count()))
-      .max_by_key(|(_, cnt)| *cnt)
-      .unwrap()
-      .0;
-   println!("{}", ans);
+
+   println!("{}UPC", S[0]);
 }

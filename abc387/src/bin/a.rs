@@ -1,6 +1,6 @@
 #![allow(unused, nonstandard_style)]
 
-use std::{collections::*, convert::identity, mem};
+use std::{collections::*, mem};
 
 use indexmap::{indexmap, indexset};
 use itertools::Itertools;
@@ -14,7 +14,6 @@ use proconio::{
 use crate::my_lib::{iter::*, models::*, num::*, *};
 
 pub mod my_lib {
-
    pub mod models {
       use proconio::derive_readable;
 
@@ -95,9 +94,9 @@ pub mod my_lib {
       mod scan_left {
          #[derive(Clone)]
          pub struct ScanLeft<I, St, F> {
-            iter:    I,
-            state:   St,
-            f:       F,
+            iter: I,
+            state: St,
+            f: F,
             started: bool,
          }
 
@@ -173,16 +172,9 @@ pub mod my_lib {
 #[fastout]
 fn main() {
    input! {
-       N: i64,
-       mut A: [i64; N]
+       A: i64, B: i64
    }
-   A.sort_unstable();
-   let A: Vec<i64> = A;
-   let max = *A.last().unwrap();
-   let ans = (2..=max)
-      .map(|i| (i, A.iter().filter(|&x| *x % i == 0).count()))
-      .max_by_key(|(_, cnt)| *cnt)
-      .unwrap()
-      .0;
+
+   let ans = (A + B).pow(2);
    println!("{}", ans);
 }
