@@ -190,9 +190,12 @@ pub mod my_lib {
 #[fastout]
 fn main() {
    input! {
-       N: i64,
+       S: Point, G: Point,
    }
-
-   let ans = 1;
-   println!("{}", ans);
+   let S: Point = S;
+   let G: Point = G;
+   let r = G.y as f64 / S.y as f64;
+   let w = (G.x as f64 - S.x as f64) / (1.0 + r);
+   let ans = S.x as f64 + w;
+   println!("{:.10}", ans);
 }

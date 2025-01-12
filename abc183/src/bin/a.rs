@@ -193,6 +193,6 @@ fn main() {
        N: i64,
    }
 
-   let ans = 1;
+   let ans = N.max(0);
    println!("{}", ans);
 }
