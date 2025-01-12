@@ -11,6 +11,7 @@ use num_integer::Integer;
 use proconio::marker::{Chars, Usize1};
 use proconio::{derive_readable, fastout, input};
 use std::collections::*;
+use std::iter::once;
 use std::mem;
 
 pub mod my_lib {
@@ -190,9 +191,16 @@ pub mod my_lib {
 #[fastout]
 fn main() {
    input! {
-       N: i64,
+       N: usize, K: i64,
+       T: [[i64; N]; N],
    }
-
-   let ans = 1;
+   let ans = (1..=N - 1)
+      .permutations(N - 1)
+      .map(|p| {
+         let routes = once(0usize).chain(p).chain(once(0usize));
+         routes.tuple_windows().map(|(i, j)| T[i][j]).sum_i64()
+      })
+      .filter(|time| *time == K)
+      .count();
    println!("{}", ans);
 }
